@@ -2,23 +2,26 @@
 #include <ros.h>
 #include <std_msgs/Int32.h>
 
-ros::NodeHandle  nh;
-
 Servo servo;
+std_msgs::Int32 angle_msg;
+
+ros::NodeHandle  nh;
+ros::Publisher cmd_echo("servo_cmd_echo", &angle_msg);
 
 void servo_cb( const std_msgs::Int32& cmd_msg){
   servo.write(cmd_msg.data);
+  angle_msg.data = cmd_msg.data;
+  cmd_echo.publish(&angle_msg);
 }
 
-
-ros::Subscriber<std_msgs::Int32> sub("servo_cmd", servo_cb);
+ros::Subscriber<std_msgs::Int32> cmd_subscribe("servo_cmd", servo_cb);
 
 void setup(){
-
   nh.initNode();
-  nh.subscribe(sub);
+  nh.advertise(cmd_echo);
+  nh.subscribe(cmd_subscribe);
   
-  servo.attach(9); //attach it to pin 9
+  servo.attach(9);
   servo.write(90);
 }
 
