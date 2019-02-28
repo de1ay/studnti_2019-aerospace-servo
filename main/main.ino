@@ -10,7 +10,7 @@ ros::Publisher cmd_echo("servo_cmd_echo", &angle_msg);
 
 void servo_cb( const std_msgs::Int32& cmd_msg){
   servo.write(cmd_msg.data);
-  angle_msg = cmd_msg;
+  angle_msg.data = cmd_msg.data;
   cmd_echo.publish(&angle_msg);
 }
 
